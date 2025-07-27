@@ -4,6 +4,9 @@ on:
   issues:
     types: [closed]
 
+permissions:
+  contents: write
+
 jobs:
   check_if_completed_issue:
     runs-on: ubuntu-latest
