@@ -1,8 +1,7 @@
-blank_isses_enabled: false
+blank_issues_enabled: false
 issue_templates:
-  - name: Task Completed
-    description: Submit a task to trigger a reward.
-    title: "[TASK COMPLETED] "
-    labels: ["task"]
+  - name: 🎯 Task Completed Declaration
+    description: Declare that you've completed your CI/CD tasks
+    title: "[TASK COMPLETED]"
+    labels: ["task-done"]
     file: task-completed.md
-u

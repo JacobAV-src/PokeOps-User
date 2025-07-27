@@ -1,5 +1,5 @@
 ---
-name:🎯 Task Completed Declaration
+name: 🎯 Task Completed Declaration
 about: Declare that you've completed your CI/CD tasks
 title: "[TASK COMPLETED]"
 labels: ["task-done"]
