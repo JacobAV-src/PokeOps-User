@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     if: contains(github.event.issue.title, '[TASK COMPLETED]')
     steps:
+      - uses: actions/checkout@v4
+
       - name: Mint the Card
         run: |
           echo "🎉 Task completed! Minting Pokémon card..."
