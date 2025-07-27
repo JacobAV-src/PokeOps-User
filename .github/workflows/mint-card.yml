@@ -20,7 +20,7 @@ jobs:
             }')
 
           echo "Backend response: $response"
-          card_url=$(echo "$response" | jq -r '.image_url')
+          card_url=$(echo "$response" | jq -r '.card.image')
 
           echo "CARD_URL=$card_url" >> $GITHUB_ENV
 
