@@ -6,33 +6,49 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   check_if_completed_issue:
     runs-on: ubuntu-latest
-    env:
-      ISSUE_NUMBER: ${{ github.event.issue.number }}
     if: contains(github.event.issue.title, '[TASK COMPLETED]')
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Comment: Starting mint"
-        run: |
-          gh issue comment "$ISSUE_NUMBER" --body "⏳ Starting Pokémon card minting..."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Comment: Starting mint
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "⏳ Starting Pokémon card minting..."
+            })
 
       - name: Check if issue already used
-        run: |
-          COMMENTS=$(gh issue view "$ISSUE_NUMBER" --json comments --jq '.comments[].body')
-          if echo "$COMMENTS" | grep -q "✅ This issue has already been used for minting."; then
-            echo "Issue already used."
-            exit 1
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: check-used
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            const issue = await github.issues.get({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            const comments = await github.issues.listComments({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            const alreadyMinted = comments.data.some(c => c.body.includes("✅ This issue has already been used for minting."));
+            if (alreadyMinted) {
+              core.setFailed("Issue already used for minting.");
+            }
 
       - name: Mint the Card
+        id: mint
         run: |
           echo "🎉 Task completed! Minting Pokémon card..."
 
@@ -49,26 +65,23 @@ jobs:
           if [ "$status" -ne 200 ]; then
             echo "Minting failed. HTTP $status"
             cat "$body_response"
-            gh issue comment "$ISSUE_NUMBER" --body "❌ Minting failed. Backend returned HTTP $status."
+            echo "status=$status" >> $GITHUB_OUTPUT
+            echo "body=$(cat $body_response)" >> $GITHUB_OUTPUT
             exit 1
           fi
 
           card_url=$(jq -r '.card.image' "$body_response")
           echo "CARD_URL=$card_url" >> $GITHUB_ENV
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update Binder HTML
         run: |
           HTML_ENTRY="<img src='${{ env.CARD_URL }}' alt='Pokemon Card' width='250' style='margin:10px;'>"
 
-          # Ensure binder exists
           mkdir -p docs
           if [ ! -f docs/index.html ]; then
             echo "<html><body><h1>My Pokémon Card Binder</h1><div id='cards'></div></body></html>" > docs/index.html
           fi
 
-          # Insert the card before the </body> tag
           sed -i "/<\/body>/i $HTML_ENTRY" docs/index.html
 
       - name: Commit and Push Binder
@@ -79,6 +92,13 @@ jobs:
           git commit -m "Add new card to binder"
           git push
 
-          gh issue comment "$ISSUE_NUMBER" --body "✅ This issue has already been used for minting."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Comment: Mint success
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "✅ This issue has already been used for minting."
+            })
