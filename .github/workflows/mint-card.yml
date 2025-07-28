@@ -92,7 +92,7 @@ jobs:
           git commit -m "Add new card to binder"
           git push
 
-      - name: Comment: Mint success
+      - name: "Comment: Mint success"
         uses: actions/github-script@v7
         with:
           script: |
