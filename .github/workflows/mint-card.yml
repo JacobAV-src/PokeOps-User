@@ -27,7 +27,7 @@ jobs:
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,
-              owner: context.repo.owner,
+              owner: context.issue.owner,
               repo: context.repo.repo,
               body: "⏳ Starting Pokémon card minting..."
             })
