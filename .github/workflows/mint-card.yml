@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Comment: Starting mint
+      - name: "Comment: Starting mint"
         run: |
           gh issue comment "$ISSUE_NUMBER" --body "⏳ Starting Pokémon card minting..."
         env:
