@@ -38,11 +38,8 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const issue = await github.issues.get({
-              issue_number: context.payload.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            });
+            const issue = context.payload.issue;
+
             const comments = await github.issues.listComments({
               issue_number: context.payload.issue.number,
               owner: context.repo.owner,
