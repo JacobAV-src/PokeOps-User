@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Comment: Starting mint
+      - name: "Comment: Starting mint"
         uses: actions/github-script@v7
         with:
           script: |
