@@ -26,11 +26,9 @@ jobs:
         with:
           script: |
             github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.issue.owner,
-              repo: context.repo.repo,
+              ...context.issue,
               body: "⏳ Starting Pokémon card minting..."
-            })
+            });
 
       - name: Check if issue already used
         id: check-used
