@@ -13,16 +13,6 @@
   <p>Cards earned from DevOps excellence!</p>
   <div id="binder"></div>
 
-  <script>
-    const cardDir = './cards/';
-    const max = 50; // Max cards to attempt to load
-    for (let i = 1; i <= max; i++) {
-      const img = new Image();
-      img.src = `${cardDir}card-${i}.png`;
-      img.onerror = () => {};
-      document.getElementById('binder').appendChild(img);
-    }
-  </script>
 </body>
 </html>
  
